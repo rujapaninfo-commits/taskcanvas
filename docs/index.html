@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskCanvas — Mac 向け Google ToDo クライアント</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Segoe UI", sans-serif;
+      margin: 0;
+      color: #1d1d1f;
+      background: #fff;
+      line-height: 1.7;
+    }
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      background: linear-gradient(160deg, #f5f5f7 0%, #fff 100%);
+    }
+    .hero h1 { font-size: 44px; font-weight: 700; margin: 0 0 12px; }
+    .hero p { font-size: 20px; color: #6e6e73; margin: 0; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 48px 0; border-top: 1px solid #e8e8ed; }
+    h2 { font-size: 26px; font-weight: 600; }
+    .modes { display: grid; gap: 24px; }
+    .mode { background: #f5f5f7; border-radius: 14px; padding: 24px; }
+    .mode h3 { margin: 0 0 6px; font-size: 18px; }
+    .mode p { margin: 0; color: #3a3a3c; font-size: 15px; }
+    ul { padding-left: 20px; }
+    li { margin: 6px 0; }
+    footer { text-align: center; padding: 40px 24px; color: #86868b; font-size: 13px; }
+    a { color: #0071e3; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>TaskCanvas</h1>
+    <p>Google ToDo リストを Mac から快適に。</p>
+  </div>
+
+  <div class="wrap">
+    <section>
+      <h2>3つの表示モード</h2>
+      <div class="modes">
+        <div class="mode">
+          <h3>ウィジェット</h3>
+          <p>デスクトップで、タスクをツリー表示。サブタスクも展開して一目で確認。</p>
+        </div>
+        <div class="mode">
+          <h3>メニューバー</h3>
+          <p>アイコンからポップアップを開き、タスクの追加と完了チェックをすばやく実行。</p>
+        </div>
+        <div class="mode">
+          <h3>通常アプリ</h3>
+          <p>リスト切り替え、詳細編集、期限設定、サブタスク作成などフル機能のワークスペース。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>主な機能</h2>
+      <ul>
+        <li>Google アカウントでログイン、複数の ToDo リストに対応</li>
+        <li>タスクの追加・完了・削除・メモ編集</li>
+        <li>期限（due date）の表示と設定</li>
+        <li>サブタスクの作成</li>
+        <li>完了済みタスクの表示／非表示切り替え</li>
+        <li>フォントサイズや表示項目のカスタマイズ</li>
+        <li>⌘N でタスク追加、⌘R でリフレッシュなどのキーボードショートカット</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>サポート・お問い合わせ</h2>
+      <p>ご質問・不具合のご報告は <a href="mailto:ru.japan.info@gmail.com">ru.japan.info@gmail.com</a> までお願いします。</p>
+      <p><a href="privacy.html">プライバシーポリシー</a></p>
+    </section>
+  </div>
+
+  <footer>
+    © 2026 DAISUKE NAKATA
+  </footer>
+</body>
+</html>

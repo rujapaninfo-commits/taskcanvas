@@ -1,0 +1,69 @@
+name: TaskCanvas
+options:
+  bundleIdPrefix: com.codex
+  deploymentTarget:
+    macOS: "14.0"
+settings:
+  base:
+    SWIFT_VERSION: 6.0
+    PRODUCT_BUNDLE_IDENTIFIER: com.codex.TaskCanvas
+    DEVELOPMENT_TEAM: 49BW44PPG7
+    CODE_SIGN_STYLE: Automatic
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 0.1.0
+targets:
+  TaskCanvas:
+    type: application
+    platform: macOS
+    sources:
+      - path: TaskCanvasApp
+      - path: TaskCanvasShared
+    info:
+      path: TaskCanvasApp/Info.plist
+      properties:
+        CFBundleDisplayName: TaskCanvas
+        LSApplicationCategoryType: public.app-category.productivity
+        NSPrincipalClass: NSApplication
+        CFBundleURLTypes:
+          - CFBundleURLName: TaskCanvas
+            CFBundleURLSchemes:
+              - taskcanvas
+    entitlements:
+      path: TaskCanvasApp/TaskCanvas.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.network.server: true
+        com.apple.security.application-groups:
+          - group.com.codex.TaskCanvas
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.codex.TaskCanvas
+        INFOPLIST_KEY_NSHumanReadableCopyright: Copyright 2026
+    dependencies:
+      - target: TaskCanvasWidgetExtension
+  TaskCanvasWidgetExtension:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: TaskCanvasWidget
+      - path: TaskCanvasShared/AppConfiguration.swift
+      - path: TaskCanvasShared/Models.swift
+      - path: TaskCanvasShared/TaskTreeBuilder.swift
+      - path: TaskCanvasShared/SharedStore.swift
+    info:
+      path: TaskCanvasWidget/Info.plist
+      properties:
+        CFBundleDisplayName: TaskCanvas Widget
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: TaskCanvasWidget/TaskCanvasWidget.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - group.com.codex.TaskCanvas
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.codex.TaskCanvas.Widget
+        PRODUCT_NAME: TaskCanvasWidgetExtension

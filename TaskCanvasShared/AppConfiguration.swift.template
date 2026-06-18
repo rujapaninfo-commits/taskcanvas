@@ -1,0 +1,17 @@
+import Foundation
+
+// SETUP: Copy this file to AppConfiguration.swift and fill in your OAuth credentials.
+// AppConfiguration.swift is .gitignored and must never be committed.
+//
+// 1. Google Cloud Console → APIs & Services → Credentials → Create Desktop app client
+// 2. Copy the client_id and client_secret below
+// 3. Rebuild the app
+//
+// If you are distributing the app, use a dedicated production project (see GOOGLE_PRODUCTION_SETUP_JA.txt).
+// Note: Desktop app client_secret is not truly secret (it ships in the binary), but keeping it
+// out of source control avoids accidental exposure and makes rotation easier.
+
+enum AppConfiguration {
+    static let googleOAuthClientID = ""       // e.g. "123456789-abc....apps.googleusercontent.com"
+    static let googleOAuthClientSecret = ""   // e.g. "GOCSPX-..."
+}

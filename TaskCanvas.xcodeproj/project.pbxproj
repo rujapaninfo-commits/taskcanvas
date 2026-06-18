@@ -1,0 +1,504 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		06EB964BFDA62C416EDA2B18 /* MainShellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939933860E6FF3C6BBC35AAF /* MainShellView.swift */; };
+		0DB19161001924AAD68AEA16 /* TaskCanvasWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDF77096724D53717631D6A /* TaskCanvasWidget.swift */; };
+		0ED94ACD6268CE5ED2B53A30 /* GoogleOAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBCEC1B7C99DBC80B91D172B /* GoogleOAuthService.swift */; };
+		18EA21FC5B6792FC3630C2A7 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB209DE8EB7695AD7575ED0 /* Models.swift */; };
+		1A4B2AEE9ADBB9A8FF320030 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24821FB863EEB1142491A790 /* SettingsView.swift */; };
+		1A774F7BD1D839B3D15F6DF3 /* TaskTreeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A99E7490BB30AB1A6E79FCD /* TaskTreeBuilder.swift */; };
+		2D1B82CCE4C72F672FA4579E /* TasksRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC99E129A86585843D6EB8A9 /* TasksRepository.swift */; };
+		34E7C73A69B72FD9BA18F894 /* AppConfiguration.swift.template in Resources */ = {isa = PBXBuildFile; fileRef = 388DB3C39A31837AFAEAA0FB /* AppConfiguration.swift.template */; };
+		5B99754E552419E0C96861DD /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6042CFD04B32887E0E6F8C0 /* SharedStore.swift */; };
+		632739287652B9BA973E2CD4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 531D301CA6536DD1F4201BA8 /* Assets.xcassets */; };
+		6E3DE8F916D257236C26CDE8 /* TaskTreeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A99E7490BB30AB1A6E79FCD /* TaskTreeBuilder.swift */; };
+		703AD053426D156D1DFB8401 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB209DE8EB7695AD7575ED0 /* Models.swift */; };
+		94A3CDB5645A035DAB300E31 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6042CFD04B32887E0E6F8C0 /* SharedStore.swift */; };
+		964685F07F7D063193A6466F /* MenuBarTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A79AF87FCEA28065D8E9232 /* MenuBarTasksView.swift */; };
+		99A1DA6521DF05D73AACAF88 /* TaskCanvasWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 81BEEE12A8332F4C4CB7E8B9 /* TaskCanvasWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A3E831657ED2B11CDB40A4F3 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD086370CDADFCAE8A45899 /* AppConfiguration.swift */; };
+		BBB6244D0877393DEC7C4D98 /* GoogleTasksAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083F34A0E6EB095F5FEB5D46 /* GoogleTasksAPI.swift */; };
+		DDC0627473F2D9C49DF64586 /* TaskCanvasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B8F5E496D61892BCEB9C78 /* TaskCanvasApp.swift */; };
+		F55EBBCD3B1FCD94B8297130 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD086370CDADFCAE8A45899 /* AppConfiguration.swift */; };
+		F5F056A03D8ED5A4FC0EFA16 /* TaskListPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EDC63F12A5E82BA4522D6A1 /* TaskListPanelView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		40669330CED59758B583826B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6F44E37DDB1A682068DABBA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E5627E0E28D452B04E8540F0;
+			remoteInfo = TaskCanvasWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F6305F7F239FF582F74E20E4 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				99A1DA6521DF05D73AACAF88 /* TaskCanvasWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		083F34A0E6EB095F5FEB5D46 /* GoogleTasksAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleTasksAPI.swift; sourceTree = "<group>"; };
+		0CDF77096724D53717631D6A /* TaskCanvasWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCanvasWidget.swift; sourceTree = "<group>"; };
+		24821FB863EEB1142491A790 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		388DB3C39A31837AFAEAA0FB /* AppConfiguration.swift.template */ = {isa = PBXFileReference; path = AppConfiguration.swift.template; sourceTree = "<group>"; };
+		46C5C09ED2BDC39E0369242C /* TaskCanvas.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TaskCanvas.entitlements; sourceTree = "<group>"; };
+		4A79AF87FCEA28065D8E9232 /* MenuBarTasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarTasksView.swift; sourceTree = "<group>"; };
+		4A99E7490BB30AB1A6E79FCD /* TaskTreeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTreeBuilder.swift; sourceTree = "<group>"; };
+		531D301CA6536DD1F4201BA8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		73B8F5E496D61892BCEB9C78 /* TaskCanvasApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCanvasApp.swift; sourceTree = "<group>"; };
+		81BEEE12A8332F4C4CB7E8B9 /* TaskCanvasWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TaskCanvasWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FD086370CDADFCAE8A45899 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
+		939933860E6FF3C6BBC35AAF /* MainShellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainShellView.swift; sourceTree = "<group>"; };
+		9EDC63F12A5E82BA4522D6A1 /* TaskListPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListPanelView.swift; sourceTree = "<group>"; };
+		CBCEC1B7C99DBC80B91D172B /* GoogleOAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleOAuthService.swift; sourceTree = "<group>"; };
+		DB473FFBAAA4BD452E2299F1 /* TaskCanvasWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TaskCanvasWidget.entitlements; sourceTree = "<group>"; };
+		E57E1D308BBDC141E34EF9DB /* TaskCanvas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TaskCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E6042CFD04B32887E0E6F8C0 /* SharedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStore.swift; sourceTree = "<group>"; };
+		EDB209DE8EB7695AD7575ED0 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		F64A316A9C78D1DA232904FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FC99E129A86585843D6EB8A9 /* TasksRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksRepository.swift; sourceTree = "<group>"; };
+		FFA199033E6EE6E995AB0FA9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		5E00B8CD9DCCD1742C40F8D2 /* TaskCanvasShared */ = {
+			isa = PBXGroup;
+			children = (
+				8FD086370CDADFCAE8A45899 /* AppConfiguration.swift */,
+				388DB3C39A31837AFAEAA0FB /* AppConfiguration.swift.template */,
+				CBCEC1B7C99DBC80B91D172B /* GoogleOAuthService.swift */,
+				083F34A0E6EB095F5FEB5D46 /* GoogleTasksAPI.swift */,
+				EDB209DE8EB7695AD7575ED0 /* Models.swift */,
+				E6042CFD04B32887E0E6F8C0 /* SharedStore.swift */,
+				9EDC63F12A5E82BA4522D6A1 /* TaskListPanelView.swift */,
+				FC99E129A86585843D6EB8A9 /* TasksRepository.swift */,
+				4A99E7490BB30AB1A6E79FCD /* TaskTreeBuilder.swift */,
+			);
+			path = TaskCanvasShared;
+			sourceTree = "<group>";
+		};
+		8F3F17CB9A85A33633E45CE6 = {
+			isa = PBXGroup;
+			children = (
+				923FDD625B42D6195F43E2B2 /* TaskCanvasApp */,
+				5E00B8CD9DCCD1742C40F8D2 /* TaskCanvasShared */,
+				BCFE440734A08087D5E84C52 /* TaskCanvasWidget */,
+				FF6FC38BA01BFBF1BC659C0D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		923FDD625B42D6195F43E2B2 /* TaskCanvasApp */ = {
+			isa = PBXGroup;
+			children = (
+				531D301CA6536DD1F4201BA8 /* Assets.xcassets */,
+				FFA199033E6EE6E995AB0FA9 /* Info.plist */,
+				939933860E6FF3C6BBC35AAF /* MainShellView.swift */,
+				4A79AF87FCEA28065D8E9232 /* MenuBarTasksView.swift */,
+				24821FB863EEB1142491A790 /* SettingsView.swift */,
+				46C5C09ED2BDC39E0369242C /* TaskCanvas.entitlements */,
+				73B8F5E496D61892BCEB9C78 /* TaskCanvasApp.swift */,
+			);
+			path = TaskCanvasApp;
+			sourceTree = "<group>";
+		};
+		BCFE440734A08087D5E84C52 /* TaskCanvasWidget */ = {
+			isa = PBXGroup;
+			children = (
+				F64A316A9C78D1DA232904FB /* Info.plist */,
+				DB473FFBAAA4BD452E2299F1 /* TaskCanvasWidget.entitlements */,
+				0CDF77096724D53717631D6A /* TaskCanvasWidget.swift */,
+			);
+			path = TaskCanvasWidget;
+			sourceTree = "<group>";
+		};
+		FF6FC38BA01BFBF1BC659C0D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E57E1D308BBDC141E34EF9DB /* TaskCanvas.app */,
+				81BEEE12A8332F4C4CB7E8B9 /* TaskCanvasWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		43E04A12D6BBB1B73943626E /* TaskCanvas */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 210228A7BD9AF8ED234F7CB5 /* Build configuration list for PBXNativeTarget "TaskCanvas" */;
+			buildPhases = (
+				3B684D858FB314B6D70160D2 /* Sources */,
+				7C04C8E992B1574F8C6DFF24 /* Resources */,
+				F6305F7F239FF582F74E20E4 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E9D048A87E071FD420B2B04D /* PBXTargetDependency */,
+			);
+			name = TaskCanvas;
+			packageProductDependencies = (
+			);
+			productName = TaskCanvas;
+			productReference = E57E1D308BBDC141E34EF9DB /* TaskCanvas.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E5627E0E28D452B04E8540F0 /* TaskCanvasWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB653FBF69585EFE898A2DC8 /* Build configuration list for PBXNativeTarget "TaskCanvasWidgetExtension" */;
+			buildPhases = (
+				B2C939D1D0A72DD6F62D72F2 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TaskCanvasWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = TaskCanvasWidgetExtension;
+			productReference = 81BEEE12A8332F4C4CB7E8B9 /* TaskCanvasWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B6F44E37DDB1A682068DABBA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					43E04A12D6BBB1B73943626E = {
+						DevelopmentTeam = 74BC2W64WZ;
+						ProvisioningStyle = Automatic;
+					};
+					E5627E0E28D452B04E8540F0 = {
+						DevelopmentTeam = 74BC2W64WZ;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = BD3D16D36CEDCD400F0C6B5E /* Build configuration list for PBXProject "TaskCanvas" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 8F3F17CB9A85A33633E45CE6;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = FF6FC38BA01BFBF1BC659C0D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				43E04A12D6BBB1B73943626E /* TaskCanvas */,
+				E5627E0E28D452B04E8540F0 /* TaskCanvasWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7C04C8E992B1574F8C6DFF24 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34E7C73A69B72FD9BA18F894 /* AppConfiguration.swift.template in Resources */,
+				632739287652B9BA973E2CD4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3B684D858FB314B6D70160D2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F55EBBCD3B1FCD94B8297130 /* AppConfiguration.swift in Sources */,
+				0ED94ACD6268CE5ED2B53A30 /* GoogleOAuthService.swift in Sources */,
+				BBB6244D0877393DEC7C4D98 /* GoogleTasksAPI.swift in Sources */,
+				06EB964BFDA62C416EDA2B18 /* MainShellView.swift in Sources */,
+				964685F07F7D063193A6466F /* MenuBarTasksView.swift in Sources */,
+				18EA21FC5B6792FC3630C2A7 /* Models.swift in Sources */,
+				1A4B2AEE9ADBB9A8FF320030 /* SettingsView.swift in Sources */,
+				5B99754E552419E0C96861DD /* SharedStore.swift in Sources */,
+				DDC0627473F2D9C49DF64586 /* TaskCanvasApp.swift in Sources */,
+				F5F056A03D8ED5A4FC0EFA16 /* TaskListPanelView.swift in Sources */,
+				1A774F7BD1D839B3D15F6DF3 /* TaskTreeBuilder.swift in Sources */,
+				2D1B82CCE4C72F672FA4579E /* TasksRepository.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B2C939D1D0A72DD6F62D72F2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A3E831657ED2B11CDB40A4F3 /* AppConfiguration.swift in Sources */,
+				703AD053426D156D1DFB8401 /* Models.swift in Sources */,
+				94A3CDB5645A035DAB300E31 /* SharedStore.swift in Sources */,
+				0DB19161001924AAD68AEA16 /* TaskCanvasWidget.swift in Sources */,
+				6E3DE8F916D257236C26CDE8 /* TaskTreeBuilder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E9D048A87E071FD420B2B04D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E5627E0E28D452B04E8540F0 /* TaskCanvasWidgetExtension */;
+			targetProxy = 40669330CED59758B583826B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4F1E0A3A4ACBF30CBA4F7D28 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TaskCanvasWidget/TaskCanvasWidget.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = TaskCanvasWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.codex.TaskCanvas.Widget;
+				PRODUCT_NAME = TaskCanvasWidgetExtension;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		51CC5800D1311C38C3707C99 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 74BC2W64WZ;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codex.TaskCanvas;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		6A0FE5F4CC325EA92A6F8F1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TaskCanvasApp/TaskCanvas.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = TaskCanvasApp/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2026";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.codex.TaskCanvas;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D003B19CC8322BDADD4486F3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TaskCanvasWidget/TaskCanvasWidget.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = TaskCanvasWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.codex.TaskCanvas.Widget;
+				PRODUCT_NAME = TaskCanvasWidgetExtension;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E55F7B5DF8743619F4E67FA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 74BC2W64WZ;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codex.TaskCanvas;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		F139B234CCFAD2D00A95E2E3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TaskCanvasApp/TaskCanvas.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = TaskCanvasApp/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2026";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.codex.TaskCanvas;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		210228A7BD9AF8ED234F7CB5 /* Build configuration list for PBXNativeTarget "TaskCanvas" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6A0FE5F4CC325EA92A6F8F1C /* Debug */,
+				F139B234CCFAD2D00A95E2E3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AB653FBF69585EFE898A2DC8 /* Build configuration list for PBXNativeTarget "TaskCanvasWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F1E0A3A4ACBF30CBA4F7D28 /* Debug */,
+				D003B19CC8322BDADD4486F3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BD3D16D36CEDCD400F0C6B5E /* Build configuration list for PBXProject "TaskCanvas" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E55F7B5DF8743619F4E67FA8 /* Debug */,
+				51CC5800D1311C38C3707C99 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B6F44E37DDB1A682068DABBA /* Project object */;
+}

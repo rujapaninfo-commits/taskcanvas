@@ -1,0 +1,23 @@
+.DS_Store
+build/
+DerivedData/
+*.xcresult
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+
+# SwiftPM
+.build/
+
+# macOS app artifacts
+*.app
+
+# Secrets — never commit the real credentials
+# Copy AppConfiguration.template.swift → AppConfiguration.swift and fill in your values
+TaskCanvasShared/AppConfiguration.swift
+
+# Build outputs and distribution archives
+dist/
+Contents/
+

@@ -1,0 +1,152 @@
+TaskCanvas 本番用 Google Cloud セットアップ
+===========================================
+
+対象プロジェクト:
+- `pdtaskcanvas`
+
+このファイルは、`pdtaskcanvas` を TaskCanvas の production 用 Google Cloud プロジェクトとして整えるためのメモです。
+
+
+1. 目的
+------
+やりたいこと:
+- Google Tasks API を本番用で使う
+- 友達がログインできるようにする
+- `Testing` 特有の 7 日制限や test users 依存を避ける
+
+
+2. まず確認すること
+------------------
+- Google Cloud の上部プロジェクト選択が `pdtaskcanvas` になっている
+- `Google Tasks API` が有効
+- `Google Auth Platform` が使える
+
+
+3. Google Tasks API を有効化
+----------------------------
+手順:
+1. `API とサービス`
+2. `ライブラリ`
+3. `Google Tasks API`
+4. `有効にする`
+
+すでに `管理` と出ていれば有効です。
+
+
+4. Branding を整える
+--------------------
+場所:
+- `Google Auth Platform > ブランディング`
+
+最低限入れるもの:
+- App name: `TaskCanvas`
+- User support email: 自分のメール
+- Developer contact information: 自分のメール
+- Homepage URL: あとで使う URL
+- Privacy Policy URL: あとで使う URL
+
+メモ:
+- ホームページとプライバシーポリシーは、本番運用ではほぼ必要
+- ドメインを使う場合は、Authorized Domains も追加する
+
+
+5. Audience を production にする
+--------------------------------
+場所:
+- `Google Auth Platform > 対象`
+
+設定:
+- User Type: `External`
+- Publishing Status: `In production`
+
+意味:
+- Google アカウントを持つ外部ユーザーが利用可能になる
+- `Testing` にある test users 制限を外せる
+- refresh token の 7 日制限を避けやすくなる
+
+
+6. Data Access を最小構成にする
+-------------------------------
+場所:
+- `Google Auth Platform > データアクセス`
+
+TaskCanvas で最低限必要な scope:
+- `https://www.googleapis.com/auth/tasks`
+
+不要な scope は入れない方がよいです。
+scope が増えると verification も重くなります。
+
+
+7. Desktop app OAuth client を作る
+----------------------------------
+場所:
+- `Google Auth Platform > クライアント`
+
+手順:
+1. `クライアントを作成`
+2. アプリケーションの種類: `デスクトップ アプリ`
+3. 名前例: `TaskCanvas Production Desktop`
+4. 作成
+5. JSON をダウンロード
+
+JSON から確認するもの:
+- `client_id`
+- `client_secret`
+
+
+8. アプリ側に入れる場所
+----------------------
+認証情報は直接 AppConfiguration.swift に書かず、テンプレートを使ってください。
+
+手順:
+1. `TaskCanvasShared/AppConfiguration.template.swift` を同フォルダに
+   `AppConfiguration.swift` としてコピー
+2. `googleOAuthClientID` と `googleOAuthClientSecret` を書き換える
+3. AppConfiguration.swift は .gitignore に登録済みなので、コミットされません
+
+⚠️ 絶対にしてはいけないこと:
+- AppConfiguration.swift をコミットする
+- AppConfiguration.swift を GitHub など公開リポジトリにプッシュする
+- client_secret をチャットやメールに貼り付ける
+
+差し替え後:
+1. ビルド (`xcodegen generate` → Xcode でビルド)
+2. `TaskCanvas.app` を作り直す
+3. zip にして友達に渡す
+
+
+9. verification について
+-----------------------
+すぐに必要とは限りませんが、以下は意識しておくとよいです。
+
+必要になりやすいもの:
+- ホームページ
+- プライバシーポリシー
+- アプリ説明
+- ロゴ
+- デモ動画
+- OAuth consent screen の表示内容が実アプリと一致していること
+
+少人数の身内配布なら、まずは `In production` にして運用を見ながら整えるでも十分です。
+
+
+10. 今回のおすすめ手順
+---------------------
+1. `pdtaskcanvas` で `Google Tasks API` を有効化
+2. `Branding` を埋める
+3. `Audience` を `In production`
+4. `Data Access` を `tasks` だけにする
+5. `Desktop app` client を作る
+6. JSON をダウンロード
+7. `AppConfiguration.swift` を production 用に差し替える
+8. アプリをビルドし直す
+9. zip にして友達に渡す
+
+
+11. 今後さらによくするなら
+--------------------------
+- 開発用 Google Cloud プロジェクトと production 用を完全分離
+- client secret のローテーション
+- Apple の notarization 対応
+- Web 配布用ページを用意
+

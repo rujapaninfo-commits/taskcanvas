@@ -33,7 +33,6 @@ final class TasksRepository: ObservableObject {
     private var widgetReloadTask: Task<Void, Never>?
 
     var oauthClientID: String { store.loadOAuthClientID() }
-    var oauthClientSecret: String { store.loadOAuthClientSecret() }
     var primaryList: TaskList? { taskLists.first }
     var oauthDebugSummary: String { authService.debugConfigurationSummary }
     var isSignedIn: Bool { authService.loadTokens() != nil }

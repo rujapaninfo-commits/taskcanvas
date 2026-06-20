@@ -16,8 +16,20 @@ xcuserdata/
 # Secrets — never commit the real credentials
 # Copy AppConfiguration.template.swift → AppConfiguration.swift and fill in your values
 TaskCanvasShared/AppConfiguration.swift
+.env
+.env.*
+!.env.example
+AuthKey_*.p8
+*.p12
+*.pem
+*.key
+*.mobileprovision
+*.provisionprofile
+GoogleService-Info.plist
+client_secret*.json
+credentials*.json
+service-account*.json
 
 # Build outputs and distribution archives
 dist/
 Contents/
-

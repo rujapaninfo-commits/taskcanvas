@@ -333,7 +333,11 @@ enum OAuthError: Error, LocalizedError {
             if message.contains("client_secret is missing") {
                 return "Google ログインで client_secret missing が返りました (flow=\(context))。Desktop クライアントが正しく設定されているか確認してください。"
             }
+            #if DEBUG
             return "Google ログインでエラーが発生しました: \(message) (flow=\(context))"
+            #else
+            return "Google ログインでエラーが発生しました。もう一度お試しください。"
+            #endif
         }
     }
 }

@@ -139,7 +139,7 @@ private struct SidebarView: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle("Google ToDo")
+        .navigationTitle("Task Lists")
         .toolbar {
             Button {
                 withAnimation(.snappy(duration: 0.18)) {
@@ -208,12 +208,15 @@ private struct MainTaskColumnView: View {
                         SettingsLink {
                             Label("設定を開く", systemImage: "gearshape")
                         }
+                        Button("デモモードを開始") {
+                            repository.startDemoMode()
+                        }
                     }
                 } else {
                     ContentUnavailableView(
                         "リストを選んでください",
                         systemImage: "rectangle.stack",
-                        description: Text("左のサイドバーから Google ToDo のリストを選んでください。")
+                        description: Text("左のサイドバーからリストを選んでください。")
                     )
                 }
             }

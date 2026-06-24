@@ -9,10 +9,10 @@ struct SettingsView: View {
         Form {
             Section("Google ログイン設定") {
                 HStack(spacing: 8) {
-                    Image(systemName: repository.isSignedIn ? "checkmark.circle.fill" : "circle.dashed")
-                        .foregroundStyle(repository.isSignedIn ? .green : .secondary)
-                    Text(repository.isSignedIn ? "ログイン中" : "未ログイン")
-                        .foregroundStyle(repository.isSignedIn ? .primary : .secondary)
+                    Image(systemName: repository.isSignedIn || repository.isDemoMode ? "checkmark.circle.fill" : "circle.dashed")
+                        .foregroundStyle(repository.isSignedIn || repository.isDemoMode ? .green : .secondary)
+                    Text(repository.isDemoMode ? "デモモード中" : (repository.isSignedIn ? "ログイン中" : "未ログイン"))
+                        .foregroundStyle(repository.isSignedIn || repository.isDemoMode ? .primary : .secondary)
                 }
                 Text("Google アカウントでログインすると、そのまま Google Tasks を同期できます。")
                     .font(.caption)
@@ -40,7 +40,24 @@ struct SettingsView: View {
                     Button("ログアウト") {
                         repository.signOut()
                     }
-                    .disabled(!repository.isSignedIn)
+                    .disabled(!repository.isSignedIn && !repository.isDemoMode)
+                }
+            }
+
+            Section("レビュー用デモ") {
+                Text("ログインできない環境でも、リスト表示・追加・編集・完了チェック・サブタスク・並び替えを確認できます。外部サーバーへは接続しません。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                HStack {
+                    Button(repository.isDemoMode ? "デモをリセット" : "デモモードを開始") {
+                        repository.startDemoMode()
+                        openWindow(id: "main-window")
+                        NSApplication.shared.activate(ignoringOtherApps: true)
+                    }
+                    Button("デモを終了") {
+                        repository.stopDemoMode()
+                    }
+                    .disabled(!repository.isDemoMode)
                 }
             }
 
@@ -61,7 +78,7 @@ struct SettingsView: View {
                     Text("ツリー表示で常に表示")
                 }
                 LabeledContent("並び順") {
-                    Text("Google の表示順を優先")
+                    Text("同期元の表示順を優先")
                 }
                 LabeledContent("メニューバー") {
                     Text("追加と完了チェック中心")

@@ -2,13 +2,14 @@ import Foundation
 import Security
 
 final class SharedStore {
-    static let appGroupID = "group.com.codex.TaskCanvas"
+    static let appGroupID = "group.49BW44PPG7.com.codex.TaskCanvas"
 
     private let sharedDefaults: UserDefaults?
     private let standardDefaults = UserDefaults.standard
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     private let snapshotKey = "widget_snapshot"
+    private let demoModeKey = "review_demo_mode"
 
     private let keychainService = "com.codex.TaskCanvas.oauth"
     private let tokenAccount = "oauth_tokens"
@@ -41,6 +42,17 @@ final class SharedStore {
 
     func loadOAuthClientSecret() -> String {
         AppConfiguration.googleOAuthClientSecret
+    }
+
+    func saveDemoModeEnabled(_ enabled: Bool) {
+        sharedDefaults?.set(enabled, forKey: demoModeKey)
+        standardDefaults.set(enabled, forKey: demoModeKey)
+    }
+
+    func loadDemoModeEnabled() -> Bool {
+        let shared = sharedDefaults?.object(forKey: demoModeKey) as? Bool
+        let standard = standardDefaults.object(forKey: demoModeKey) as? Bool
+        return shared ?? standard ?? false
     }
 
     private let widgetListIDKey = "widget_list_id"

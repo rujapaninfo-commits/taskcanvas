@@ -20,6 +20,7 @@ final class TasksRepository: ObservableObject {
     @Published var showListTitle: Bool {
         didSet { store.saveShowListTitle(showListTitle) }
     }
+    @Published private(set) var isDemoMode: Bool
 
     private let store: SharedStore
     private let authService: GoogleOAuthService
@@ -35,7 +36,7 @@ final class TasksRepository: ObservableObject {
     var oauthClientID: String { store.loadOAuthClientID() }
     var primaryList: TaskList? { taskLists.first }
     var oauthDebugSummary: String { authService.debugConfigurationSummary }
-    var isSignedIn: Bool { authService.loadTokens() != nil }
+    var isSignedIn: Bool { !isDemoMode && authService.loadTokens() != nil }
 
     var widgetListID: String? {
         get { store.loadWidgetListID() ?? taskLists.first?.id }
@@ -65,12 +66,21 @@ final class TasksRepository: ObservableObject {
         self.fontSizeLevel = store.loadFontSizeLevel()
         self.showModeDescription = store.loadShowModeDescription()
         self.showListTitle = store.loadShowListTitle()
-        hydrateFromCache()
+        self.isDemoMode = store.loadDemoModeEnabled()
+        if isDemoMode {
+            loadDemoData()
+        } else {
+            hydrateFromCache()
+        }
     }
 
     func bootstrap() async {
         guard !didBootstrap else { return }
         didBootstrap = true
+        if isDemoMode {
+            loadDemoData()
+            return
+        }
         if authService.loadTokens() != nil {
             await refresh()
         } else {
@@ -80,6 +90,7 @@ final class TasksRepository: ObservableObject {
 
     func signIn() async -> Bool {
         do {
+            stopDemoMode(clearTasks: true)
             statusMessage = "Google にログインしています..."
             let tokens = try await authService.signIn()
             didBootstrap = true
@@ -95,6 +106,7 @@ final class TasksRepository: ObservableObject {
     }
 
     func signOut() {
+        stopDemoMode(clearTasks: false)
         authService.signOut()
         taskLists = []
         tasksByListID = [:]
@@ -111,6 +123,10 @@ final class TasksRepository: ObservableObject {
     }
 
     func refresh() async {
+        if isDemoMode {
+            statusMessage = "デモモードで表示中です。ログインせずに主な機能を試せます。"
+            return
+        }
         do {
             statusMessage = "タスクを更新しています..."
             guard let tokens = try await refreshTokenWithRetry() else {
@@ -126,6 +142,11 @@ final class TasksRepository: ObservableObject {
     }
 
     func loadCompletedTasks(for listID: String) async {
+        if isDemoMode {
+            completedLoadStateByListID[listID] = .loaded
+            statusMessage = "デモの完了済みタスクを表示しました。"
+            return
+        }
         guard completedLoadStateByListID[listID] != .loading else { return }
 
         do {
@@ -173,6 +194,10 @@ final class TasksRepository: ObservableObject {
     }
 
     func loadMoreActiveTasks(for listID: String) async {
+        if isDemoMode {
+            activeExhaustedListIDs.insert(listID)
+            return
+        }
         guard !activeLoadingListIDs.contains(listID), !activeExhaustedListIDs.contains(listID) else { return }
 
         do {
@@ -209,6 +234,12 @@ final class TasksRepository: ObservableObject {
     }
 
     func toggle(task: TaskItem) async {
+        if isDemoMode {
+            applyLocalTaskUpdate(taskID: task.id, listID: task.taskListID) { $0.status = $0.isCompleted ? .needsAction : .completed }
+            statusMessage = "デモタスクを更新しました。"
+            persistSnapshot()
+            return
+        }
         // Optimistic: flip status immediately in local state
         applyLocalTaskUpdate(taskID: task.id, listID: task.taskListID) { $0.status = $0.isCompleted ? .needsAction : .completed }
         do {
@@ -226,6 +257,23 @@ final class TasksRepository: ObservableObject {
     func addTask(title: String, to listID: String, parentID: String? = nil) async {
         let cleaned = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleaned.isEmpty else { return }
+        if isDemoMode {
+            let task = TaskItem(
+                id: "demo-task-\(UUID().uuidString)",
+                taskListID: listID,
+                title: cleaned,
+                notes: nil,
+                status: .needsAction,
+                parentID: parentID,
+                position: nil,
+                due: nil
+            )
+            tasksByListID[listID, default: []].append(task)
+            rebuildVisibleTaskRowCache()
+            persistSnapshot()
+            statusMessage = "デモタスクを追加しました。"
+            return
+        }
         do {
             guard let tokens = try await refreshTokenWithRetry() else { return }
             try await api.addTask(title: cleaned, taskListID: listID, parentID: parentID, accessToken: tokens.accessToken)
@@ -237,6 +285,12 @@ final class TasksRepository: ObservableObject {
     }
 
     func deleteTask(_ task: TaskItem) async {
+        if isDemoMode {
+            removeLocalTask(taskID: task.id, listID: task.taskListID)
+            persistSnapshot()
+            statusMessage = "デモタスクを削除しました。"
+            return
+        }
         // Optimistic: remove from local state immediately
         removeLocalTask(taskID: task.id, listID: task.taskListID)
         do {
@@ -262,6 +316,16 @@ final class TasksRepository: ObservableObject {
 
         let cleanedNotes = request.notes.trimmingCharacters(in: .whitespacesAndNewlines)
         let notes: String? = cleanedNotes.isEmpty ? nil : cleanedNotes
+        if isDemoMode {
+            applyLocalTaskUpdate(taskID: request.taskID, listID: listID) {
+                $0.title = cleanedTitle
+                $0.notes = notes
+                $0.due = request.due
+            }
+            persistSnapshot()
+            statusMessage = "デモタスクを更新しました。"
+            return
+        }
 
         // Snapshot for rollback
         let original = tasksByListID[listID]?.first(where: { $0.id == request.taskID })
@@ -353,6 +417,12 @@ final class TasksRepository: ObservableObject {
     }
 
     func moveTask(_ request: TaskMoveRequest, in listID: String) async {
+        if isDemoMode {
+            moveDemoTask(request, in: listID)
+            persistSnapshot()
+            statusMessage = "デモタスクを移動しました。"
+            return
+        }
         do {
             guard let tokens = try await refreshTokenWithRetry() else { return }
             guard
@@ -443,7 +513,7 @@ final class TasksRepository: ObservableObject {
         rebuildVisibleTaskRowCache()
         persistSnapshot()
         if lists.isEmpty {
-            statusMessage = "Google ToDo のリストがまだ見つかりません。"
+            statusMessage = "タスクリストがまだ見つかりません。"
         } else {
             statusMessage = "最終更新: \(Date.now.formatted(date: .omitted, time: .shortened))"
         }
@@ -466,6 +536,138 @@ final class TasksRepository: ObservableObject {
         } else {
             statusMessage = "前回の保存内容を読み込みました"
         }
+    }
+
+    func startDemoMode() {
+        authService.signOut()
+        isDemoMode = true
+        store.saveDemoModeEnabled(true)
+        loadDemoData()
+        persistSnapshot()
+    }
+
+    func stopDemoMode(clearTasks: Bool = true) {
+        guard isDemoMode || store.loadDemoModeEnabled() else { return }
+        isDemoMode = false
+        store.saveDemoModeEnabled(false)
+        if clearTasks {
+            hydrateFromCache()
+        }
+    }
+
+    private func loadDemoData() {
+        let today = Calendar.current.startOfDay(for: .now)
+        let personalList = TaskList(id: "demo-list-main", title: "Today", updated: .now)
+        let planningList = TaskList(id: "demo-list-planning", title: "Project", updated: .now)
+        let mainTasks = [
+            TaskItem(
+                id: "demo-task-focus",
+                taskListID: personalList.id,
+                title: "今日の優先タスクを3つに絞る",
+                notes: "インライン編集でメモや期限を変更できます。",
+                status: .needsAction,
+                parentID: nil,
+                position: "0001",
+                due: today
+            ),
+            TaskItem(
+                id: "demo-task-review",
+                taskListID: personalList.id,
+                title: "レビュー用の動作確認",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0002",
+                due: today.addingTimeInterval(86_400)
+            ),
+            TaskItem(
+                id: "demo-task-review-child",
+                taskListID: personalList.id,
+                title: "サブタスクもそのまま管理",
+                notes: nil,
+                status: .needsAction,
+                parentID: "demo-task-review",
+                position: "0003",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-done",
+                taskListID: personalList.id,
+                title: "完了済みタスクの表示切替",
+                notes: nil,
+                status: .completed,
+                parentID: nil,
+                position: "0004",
+                due: nil
+            )
+        ]
+        let projectTasks = [
+            TaskItem(
+                id: "demo-task-plan",
+                taskListID: planningList.id,
+                title: "次のリリース候補をメモする",
+                notes: "ドラッグ&ドロップで並び替えできます。",
+                status: .needsAction,
+                parentID: nil,
+                position: "0001",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-menu",
+                taskListID: planningList.id,
+                title: "メニューバーから素早く追加する",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0002",
+                due: nil
+            )
+        ]
+
+        taskLists = [personalList, planningList]
+        tasksByListID = [
+            personalList.id: mainTasks.filter { !$0.isCompleted },
+            planningList.id: projectTasks
+        ]
+        completedTasksByListID = [
+            personalList.id: mainTasks.filter(\.isCompleted),
+            planningList.id: []
+        ]
+        completedLoadStateByListID = [
+            personalList.id: .loaded,
+            planningList.id: .loaded
+        ]
+        activeNextPageTokenByListID = [:]
+        activeExhaustedListIDs = Set(taskLists.map(\.id))
+        activeLoadingListIDs = []
+        completedNextPageTokenByListID = [:]
+        completedExhaustedListIDs = Set(taskLists.map(\.id))
+        rebuildVisibleTaskRowCache()
+        statusMessage = "デモモードで表示中です。ログインせずに主な機能を試せます。"
+    }
+
+    private func moveDemoTask(_ request: TaskMoveRequest, in listID: String) {
+        guard
+            var tasks = tasksByListID[listID],
+            let sourceIndex = tasks.firstIndex(where: { $0.id == request.sourceTaskID }),
+            let targetIndex = tasks.firstIndex(where: { $0.id == request.targetTaskID })
+        else { return }
+
+        var source = tasks.remove(at: sourceIndex)
+        let adjustedTargetIndex = tasks.firstIndex(where: { $0.id == request.targetTaskID }) ?? max(0, targetIndex - (sourceIndex < targetIndex ? 1 : 0))
+        switch request.placement {
+        case .makeChild:
+            source.parentID = request.targetTaskID
+            tasks.insert(source, at: min(adjustedTargetIndex + 1, tasks.count))
+        case .after:
+            source.parentID = tasks[safe: adjustedTargetIndex]?.parentID
+            tasks.insert(source, at: min(adjustedTargetIndex + 1, tasks.count))
+        case .before:
+            source.parentID = tasks[safe: adjustedTargetIndex]?.parentID
+            tasks.insert(source, at: adjustedTargetIndex)
+        }
+        tasksByListID[listID] = tasks
+        rebuildVisibleTaskRowCache()
     }
 
     private func refreshList(_ listID: String, using tokens: OAuthTokens) async {
@@ -566,5 +768,11 @@ final class TasksRepository: ObservableObject {
             throw lastError
         }
         return nil
+    }
+}
+
+private extension Array {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

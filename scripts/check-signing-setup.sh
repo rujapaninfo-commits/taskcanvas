@@ -7,11 +7,12 @@
 # 使い方:  scripts/check-signing-setup.sh
 set -uo pipefail
 
-TEAM_ID="74BC2W64WZ"
+TEAM_ID="49BW44PPG7"
 NOTARY_PROFILE="${NOTARY_PROFILE:-taskcanvas-notary}"
 ok=0; ng=0
 say_ok()   { printf "  ✅ %s\n" "$1"; ok=$((ok+1)); }
 say_ng()   { printf "  ❌ %s\n" "$1"; ng=$((ng+1)); }
+say_note() { printf "  ℹ️  %s\n" "$1"; }
 say_fix()  { printf "       → %s\n" "$1"; }
 
 echo "===== TaskCanvas 配布準備チェック ====="
@@ -70,8 +71,7 @@ fi
 if echo "$IDS" | grep -qi "Apple Distribution\|3rd Party Mac"; then
   say_ok "App Store 用の配布証明書あり"
 else
-  say_ng "App Store 用配布証明書が無い（App Store に出すなら必要。直接配布だけなら不要）"
-  say_fix "Xcode の Automatic signing で App Store アーカイブ時に自動取得される"
+  say_note "Apple Distribution のローカル identity は無し（Automatic signing の Xcode-managed 証明書で App Store export 可）"
 fi
 echo
 

@@ -9,7 +9,9 @@ final class SharedStore {
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     private let snapshotKey = "widget_snapshot"
+    private let primarySnapshotKey = "primary_widget_snapshot"
     private let demoModeKey = "review_demo_mode"
+    private let demoSignedInKey = "review_demo_signed_in"
 
     private let keychainService = "com.codex.TaskCanvas.oauth"
     private let tokenAccount = "oauth_tokens"
@@ -36,6 +38,30 @@ final class SharedStore {
         return snapshot
     }
 
+    func savePrimarySnapshot(_ snapshot: WidgetSnapshot) {
+        guard let data = try? encoder.encode(snapshot) else { return }
+        sharedDefaults?.set(data, forKey: primarySnapshotKey)
+        standardDefaults.set(data, forKey: primarySnapshotKey)
+    }
+
+    func loadPrimarySnapshot() -> WidgetSnapshot {
+        guard
+            let data = sharedDefaults?.data(forKey: primarySnapshotKey) ?? standardDefaults.data(forKey: primarySnapshotKey),
+            let snapshot = try? decoder.decode(WidgetSnapshot.self, from: data)
+        else {
+            return .empty
+        }
+        return snapshot
+    }
+
+    /// Google Tasks由来のローカルキャッシュを、サインアウト時に消去する。
+    func clearTaskSnapshots() {
+        sharedDefaults?.removeObject(forKey: snapshotKey)
+        sharedDefaults?.removeObject(forKey: primarySnapshotKey)
+        standardDefaults.removeObject(forKey: snapshotKey)
+        standardDefaults.removeObject(forKey: primarySnapshotKey)
+    }
+
     func loadOAuthClientID() -> String {
         AppConfiguration.googleOAuthClientID
     }
@@ -52,6 +78,17 @@ final class SharedStore {
     func loadDemoModeEnabled() -> Bool {
         let shared = sharedDefaults?.object(forKey: demoModeKey) as? Bool
         let standard = standardDefaults.object(forKey: demoModeKey) as? Bool
+        return shared ?? standard ?? false
+    }
+
+    func saveDemoSignedIn(_ signedIn: Bool) {
+        sharedDefaults?.set(signedIn, forKey: demoSignedInKey)
+        standardDefaults.set(signedIn, forKey: demoSignedInKey)
+    }
+
+    func loadDemoSignedIn() -> Bool {
+        let shared = sharedDefaults?.object(forKey: demoSignedInKey) as? Bool
+        let standard = standardDefaults.object(forKey: demoSignedInKey) as? Bool
         return shared ?? standard ?? false
     }
 

@@ -23,7 +23,7 @@
 </head>
 <body>
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated: June 18, 2026</p>
+  <p class="updated">Last updated: July 18, 2026</p>
 
   <p>TaskCanvas ("the app") is a macOS app that connects to your Google Tasks account to display and manage your tasks. This policy explains what data the app accesses and how it is handled.</p>
 
@@ -32,10 +32,14 @@
 
   <h2>Data Storage</h2>
   <ul>
-    <li>OAuth tokens are stored locally on your Mac in the app's sandboxed container.</li>
-    <li>A snapshot of your task data is cached locally in the app group container shared between the app and the widget.</li>
-    <li>No task data or personal information is transmitted to any server other than Google's APIs.</li>
+    <li>OAuth access and refresh tokens are stored in the macOS Keychain with the <code>kSecAttrAccessibleWhenUnlockedThisDeviceOnly</code> protection class. Tokens are not stored in the task cache or sent to our servers.</li>
+    <li>A snapshot of your task data is cached locally in the app's sandboxed App Group container so the app and widget can display it.</li>
+    <li>All communication with Google uses HTTPS/TLS. The app uses OAuth 2.0 with PKCE and validates the OAuth state before accepting a callback.</li>
+    <li>TaskCanvas has no backend database and does not transmit Google user data to our servers.</li>
   </ul>
+
+  <h2>Data Protection</h2>
+  <p>We protect sensitive data using the macOS sandbox, access-controlled App Group storage, and the macOS Keychain. OAuth tokens are restricted to the unlocked device on which they were created. Network requests use HTTPS/TLS, and OAuth authorization uses PKCE and state validation to reduce interception and request-forgery risks. We do not log task contents, OAuth tokens, or refresh tokens.</p>
 
   <h2>Data Sharing</h2>
   <p>TaskCanvas does not share, sell, or transmit your data to any third parties. All communication is directly between your device and Google's APIs.</p>
@@ -54,6 +58,10 @@
 
   <h2>Revoking Access</h2>
   <p>You can revoke TaskCanvas's access to your Google account at any time via <a href="https://myaccount.google.com/permissions" target="_blank">Google Account Permissions</a>. You can also sign out from within the app's Settings.</p>
+
+  <h2>Data Retention and Deletion</h2>
+  <p>TaskCanvas retains Google Tasks data only as a local cache while you use the app, so the app and widget can work between refreshes. We do not retain Google user data on our servers. When you sign out, TaskCanvas deletes the local task snapshots and OAuth tokens from the app's storage and Keychain. Uninstalling the app removes its sandbox and App Group files according to macOS behavior. Tasks that you create or keep in Google Tasks remain in your Google account until you delete them there; TaskCanvas does not delete Google account data merely because you sign out.</p>
+  <p>To request help confirming deletion of any locally stored data, contact <a href="mailto:ru.japan.info@gmail.com">ru.japan.info@gmail.com</a>. To delete data held by Google, use Google Tasks or your Google Account controls.</p>
 
   <h2>Contact</h2>
   <p>If you have questions about this policy, please contact: <a href="mailto:ru.japan.info@gmail.com">ru.japan.info@gmail.com</a></p>

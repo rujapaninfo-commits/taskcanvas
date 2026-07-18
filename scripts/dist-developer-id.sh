@@ -6,14 +6,14 @@
 # ＝ FRIEND_DISTRIBUTION_JA.txt の「最初の起動方法（警告回避）」が不要になる。
 #
 # 前提（初回だけ）:
-#   1. Apple Developer Program 加入済み（済み：Team 74BC2W64WZ）
+#   1. Apple Developer Program 加入済み（済み：Team 49BW44PPG7）
 #   2. full Xcode インストール（Command Line Tools だけだと notarytool が無い）
 #   3. Xcode に Apple ID をサインインし、"Developer ID Application" 証明書を取得
 #        Xcode > Settings > Accounts > Manage Certificates > + > Developer ID Application
 #   4. notarytool 用の認証情報を Keychain に保存（プロファイル名は任意、ここでは taskcanvas-notary）:
 #        xcrun notarytool store-credentials taskcanvas-notary \
 #          --apple-id "<あなたのApple ID>" \
-#          --team-id 74BC2W64WZ \
+#          --team-id 49BW44PPG7 \
 #          --password "<app専用パスワード>"
 #      ※ app専用パスワードは https://appleid.apple.com > サインインとセキュリティ > App用パスワード で発行
 #   5. xcodegen（`brew install xcodegen`）
@@ -46,7 +46,10 @@ xcodebuild archive \
   -configuration Release \
   -destination "generic/platform=macOS" \
   -archivePath "$ARCHIVE_PATH" \
-  CODE_SIGN_STYLE=Automatic
+  CODE_SIGN_STYLE=Manual \
+  CODE_SIGN_IDENTITY="Developer ID Application: DAISUKE NAKATA (49BW44PPG7)" \
+  PROVISIONING_PROFILE_SPECIFIER="" \
+  DEVELOPMENT_TEAM=49BW44PPG7
 
 echo "==> Developer ID でエクスポート中…"
 rm -rf "$EXPORT_PATH"

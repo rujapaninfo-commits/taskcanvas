@@ -200,16 +200,33 @@ private struct MainTaskColumnView: View {
                 }
             } else {
                 if repository.taskLists.isEmpty {
-                    ContentUnavailableView {
-                        Label("タスクをまだ読み込めていません", systemImage: "checklist")
-                    } description: {
-                        Text(repository.statusMessage)
-                    } actions: {
-                        SettingsLink {
-                            Label("設定を開く", systemImage: "gearshape")
+                    if repository.needsDemoSignIn {
+                        ContentUnavailableView {
+                            Label("デモを始めるにはログインしてください", systemImage: "person.crop.circle.badge.questionmark")
+                        } description: {
+                            Text("デモモード中は Google ログイン後も実データには切り替えず、サンプルタスク一覧を表示します。デモ終了で実際の Google Tasks に戻ります。")
+                        } actions: {
+                            Button("Google にログイン") {
+                                Task {
+                                    _ = await repository.signIn()
+                                }
+                            }
+                            SettingsLink {
+                                Label("設定を開く", systemImage: "gearshape")
+                            }
                         }
-                        Button("デモモードを開始") {
-                            repository.startDemoMode()
+                    } else {
+                        ContentUnavailableView {
+                            Label("タスクをまだ読み込めていません", systemImage: "checklist")
+                        } description: {
+                            Text(repository.statusMessage)
+                        } actions: {
+                            SettingsLink {
+                                Label("設定を開く", systemImage: "gearshape")
+                            }
+                            Button("デモモードを開始") {
+                                repository.startDemoMode()
+                            }
                         }
                     }
                 } else {

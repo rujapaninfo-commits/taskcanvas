@@ -21,6 +21,7 @@ final class TasksRepository: ObservableObject {
         didSet { store.saveShowListTitle(showListTitle) }
     }
     @Published private(set) var isDemoMode: Bool
+    @Published private(set) var isDemoSignedIn: Bool
 
     private let store: SharedStore
     private let authService: GoogleOAuthService
@@ -37,6 +38,7 @@ final class TasksRepository: ObservableObject {
     var primaryList: TaskList? { taskLists.first }
     var oauthDebugSummary: String { authService.debugConfigurationSummary }
     var isSignedIn: Bool { !isDemoMode && authService.loadTokens() != nil }
+    var needsDemoSignIn: Bool { isDemoMode && !isDemoSignedIn }
 
     var widgetListID: String? {
         get { store.loadWidgetListID() ?? taskLists.first?.id }
@@ -67,8 +69,13 @@ final class TasksRepository: ObservableObject {
         self.showModeDescription = store.loadShowModeDescription()
         self.showListTitle = store.loadShowListTitle()
         self.isDemoMode = store.loadDemoModeEnabled()
+        self.isDemoSignedIn = store.loadDemoSignedIn()
         if isDemoMode {
-            loadDemoData()
+            if isDemoSignedIn {
+                loadDemoData()
+            } else {
+                prepareDemoSignInState()
+            }
         } else {
             hydrateFromCache()
         }
@@ -78,28 +85,46 @@ final class TasksRepository: ObservableObject {
         guard !didBootstrap else { return }
         didBootstrap = true
         if isDemoMode {
-            loadDemoData()
+            if isDemoSignedIn {
+                loadDemoData()
+            } else {
+                prepareDemoSignInState()
+            }
             return
         }
         if authService.loadTokens() != nil {
             await refresh()
         } else {
-            statusMessage = oauthClientID.isEmpty ? "設定画面で OAuth Client ID を入力してください。" : "Google にログインするとタスクを読み込めます。"
+            resetSignedOutState(
+                status: oauthClientID.isEmpty ? "設定画面で OAuth Client ID を入力してください。" : "Google にログインするとタスクを読み込めます。"
+            )
         }
     }
 
     func signIn() async -> Bool {
+        let wasDemoMode = isDemoMode
         do {
-            stopDemoMode(clearTasks: true)
-            statusMessage = "Google にログインしています..."
+            statusMessage = wasDemoMode
+                ? "デモモードのまま Google にログインしています..."
+                : "Google にログインしています..."
             let tokens = try await authService.signIn()
             didBootstrap = true
+            if wasDemoMode {
+                isDemoSignedIn = true
+                store.saveDemoSignedIn(true)
+                loadDemoData()
+                persistSnapshot()
+                statusMessage = "Google ログインを確認しました。デモモードで表示しています。"
+                return true
+            }
             statusMessage = "ログインできました。タスクを更新しています..."
             try await refresh(using: tokens)
             return true
         } catch {
             let errorMessage = error.localizedDescription
-            statusMessage = errorMessage
+            statusMessage = wasDemoMode
+                ? "デモモードのログイン画面に戻りました。"
+                : errorMessage
             alertError = (title: "ログインエラー", message: errorMessage)
             return false
         }
@@ -108,18 +133,8 @@ final class TasksRepository: ObservableObject {
     func signOut() {
         stopDemoMode(clearTasks: false)
         authService.signOut()
-        taskLists = []
-        tasksByListID = [:]
-        completedTasksByListID = [:]
-        completedLoadStateByListID = [:]
-        visibleTaskRowsByListID = [:]
-        activeNextPageTokenByListID = [:]
-        activeExhaustedListIDs = []
-        activeLoadingListIDs = []
-        completedNextPageTokenByListID = [:]
-        completedExhaustedListIDs = []
-        persistSnapshot()
-        statusMessage = "ログアウトしました"
+        store.clearTaskSnapshots()
+        resetSignedOutState(status: "ログアウトしました")
     }
 
     func refresh() async {
@@ -269,6 +284,7 @@ final class TasksRepository: ObservableObject {
                 due: nil
             )
             tasksByListID[listID, default: []].append(task)
+            renumberDemoPositions(in: listID)
             rebuildVisibleTaskRowCache()
             persistSnapshot()
             statusMessage = "デモタスクを追加しました。"
@@ -539,55 +555,143 @@ final class TasksRepository: ObservableObject {
     }
 
     func startDemoMode() {
-        authService.signOut()
+        if !isDemoMode {
+            savePrimarySnapshot()
+        }
         isDemoMode = true
+        isDemoSignedIn = false
         store.saveDemoModeEnabled(true)
-        loadDemoData()
+        store.saveDemoSignedIn(false)
+        prepareDemoSignInState()
         persistSnapshot()
     }
 
     func stopDemoMode(clearTasks: Bool = true) {
         guard isDemoMode || store.loadDemoModeEnabled() else { return }
         isDemoMode = false
+        isDemoSignedIn = false
         store.saveDemoModeEnabled(false)
+        store.saveDemoSignedIn(false)
         if clearTasks {
-            hydrateFromCache()
+            hydratePrimarySnapshot()
+            if authService.loadTokens() != nil {
+                Task { await self.refresh() }
+            }
         }
     }
 
     private func loadDemoData() {
-        let today = Calendar.current.startOfDay(for: .now)
         let personalList = TaskList(id: "demo-list-main", title: "Today", updated: .now)
         let planningList = TaskList(id: "demo-list-planning", title: "Project", updated: .now)
         let mainTasks = [
             TaskItem(
-                id: "demo-task-focus",
+                id: "demo-task-morning",
                 taskListID: personalList.id,
-                title: "今日の優先タスクを3つに絞る",
-                notes: "インライン編集でメモや期限を変更できます。",
+                title: "朝の優先タスクを3つに絞る",
+                notes: "このデモでは、追加・編集・完了・並び替えの流れを一通り見せられます。",
                 status: .needsAction,
                 parentID: nil,
                 position: "0001",
-                due: today
+                due: nil
             ),
             TaskItem(
-                id: "demo-task-review",
+                id: "demo-task-mail",
                 taskListID: personalList.id,
-                title: "レビュー用の動作確認",
+                title: "メール返信を3件片付ける",
                 notes: nil,
                 status: .needsAction,
                 parentID: nil,
                 position: "0002",
-                due: today.addingTimeInterval(86_400)
+                due: nil
             ),
             TaskItem(
-                id: "demo-task-review-child",
+                id: "demo-task-deck",
                 taskListID: personalList.id,
-                title: "サブタスクもそのまま管理",
+                title: "発表デッキの見出しを整える",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0003",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-grocery",
+                taskListID: personalList.id,
+                title: "買い物リストを更新する",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0004",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-review",
+                taskListID: personalList.id,
+                title: "動画用のデモ画面を確認する",
+                notes: "サブタスクを展開した状態も見せられます。",
+                status: .needsAction,
+                parentID: nil,
+                position: "0005",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-review-child-1",
+                taskListID: personalList.id,
+                title: "追加ボタンと Enter 送信を試す",
                 notes: nil,
                 status: .needsAction,
                 parentID: "demo-task-review",
-                position: "0003",
+                position: "0006",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-review-child-2",
+                taskListID: personalList.id,
+                title: "メモの編集と完了チェックを試す",
+                notes: nil,
+                status: .needsAction,
+                parentID: "demo-task-review",
+                position: "0007",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-walk",
+                taskListID: personalList.id,
+                title: "15分だけ散歩する",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0008",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-reading",
+                taskListID: personalList.id,
+                title: "読みかけの記事を2本読む",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0009",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-desk",
+                taskListID: personalList.id,
+                title: "デスクまわりを10分だけ片付ける",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0010",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-capture",
+                taskListID: personalList.id,
+                title: "スクリーンショット候補を見直す",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0011",
                 due: nil
             ),
             TaskItem(
@@ -597,7 +701,17 @@ final class TasksRepository: ObservableObject {
                 notes: nil,
                 status: .completed,
                 parentID: nil,
-                position: "0004",
+                position: "0012",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-done-2",
+                taskListID: personalList.id,
+                title: "ウィジェットの見え方を確認済み",
+                notes: nil,
+                status: .completed,
+                parentID: nil,
+                position: "0013",
                 due: nil
             )
         ]
@@ -621,6 +735,36 @@ final class TasksRepository: ObservableObject {
                 parentID: nil,
                 position: "0002",
                 due: nil
+            ),
+            TaskItem(
+                id: "demo-task-widget",
+                taskListID: planningList.id,
+                title: "ウィジェット表示の文言を確認する",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0003",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-review-notes",
+                taskListID: planningList.id,
+                title: "審査メモ用の説明文を整える",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0004",
+                due: nil
+            ),
+            TaskItem(
+                id: "demo-task-polish",
+                taskListID: planningList.id,
+                title: "動画撮影前に見た目を最終確認する",
+                notes: nil,
+                status: .needsAction,
+                parentID: nil,
+                position: "0005",
+                due: nil
             )
         ]
 
@@ -643,7 +787,21 @@ final class TasksRepository: ObservableObject {
         completedNextPageTokenByListID = [:]
         completedExhaustedListIDs = Set(taskLists.map(\.id))
         rebuildVisibleTaskRowCache()
-        statusMessage = "デモモードで表示中です。ログインせずに主な機能を試せます。"
+        statusMessage = "デモモードで表示中です。Google ログイン後もサンプルタスクを表示しています。"
+    }
+
+    private func prepareDemoSignInState() {
+        taskLists = []
+        tasksByListID = [:]
+        completedTasksByListID = [:]
+        completedLoadStateByListID = [:]
+        visibleTaskRowsByListID = [:]
+        activeNextPageTokenByListID = [:]
+        activeExhaustedListIDs = []
+        activeLoadingListIDs = []
+        completedNextPageTokenByListID = [:]
+        completedExhaustedListIDs = []
+        statusMessage = "デモを始めるにはログインしてください。Google にログインすると、戻り先はデモ画面のままです。"
     }
 
     private func moveDemoTask(_ request: TaskMoveRequest, in listID: String) {
@@ -667,7 +825,26 @@ final class TasksRepository: ObservableObject {
             tasks.insert(source, at: adjustedTargetIndex)
         }
         tasksByListID[listID] = tasks
+        renumberDemoPositions(in: listID)
         rebuildVisibleTaskRowCache()
+    }
+
+    /// デモモードのタスクは実際のGoogle Tasks APIのようにサーバー側で
+    /// positionを再採番してくれないため、追加・並び替えのたびにローカルで
+    /// 配列順を position 文字列へ焼き直す。これをしないと
+    /// TaskTreeBuilder.ordered が古い(またはnilの)positionで並べ直してしまい、
+    /// ドラッグでの並び替えが反映されない（position=nil同士はタイトルの
+    /// アルファベット順にフォールバックするため特に顕著）。
+    private func renumberDemoPositions(in listID: String) {
+        guard var tasks = tasksByListID[listID] else { return }
+        var countersByParent: [String: Int] = [:]
+        for index in tasks.indices {
+            let key = tasks[index].parentID ?? ""
+            let next = (countersByParent[key] ?? 0) + 1
+            countersByParent[key] = next
+            tasks[index].position = String(format: "%04d", next)
+        }
+        tasksByListID[listID] = tasks
     }
 
     private func refreshList(_ listID: String, using tokens: OAuthTokens) async {
@@ -725,15 +902,27 @@ final class TasksRepository: ObservableObject {
     }
 
     private func persistSnapshot() {
-        store.saveSnapshot(
-            WidgetSnapshot(
-                updatedAt: .now,
-                lists: taskLists,
-                tasksByListID: tasksByListID,
-                widgetListID: store.loadWidgetListID()
-            )
+        let snapshot = WidgetSnapshot(
+            updatedAt: .now,
+            lists: taskLists,
+            tasksByListID: tasksByListID,
+            widgetListID: store.loadWidgetListID()
         )
+        store.saveSnapshot(snapshot)
+        if !isDemoMode {
+            store.savePrimarySnapshot(snapshot)
+        }
         scheduleWidgetReload()
+    }
+
+    private func savePrimarySnapshot() {
+        let snapshot = WidgetSnapshot(
+            updatedAt: .now,
+            lists: taskLists,
+            tasksByListID: tasksByListID,
+            widgetListID: store.loadWidgetListID()
+        )
+        store.savePrimarySnapshot(snapshot)
     }
 
     private func scheduleWidgetReload() {
@@ -758,6 +947,11 @@ final class TasksRepository: ObservableObject {
             do {
                 return try await authService.refreshIfNeeded()
             } catch {
+                if let oauthError = error as? OAuthError,
+                   oauthError.requiresReauthentication {
+                    resetSignedOutState(status: oauthError.localizedDescription)
+                    throw oauthError
+                }
                 lastError = error
                 guard attempt < maxAttempts else { break }
                 // Wait before retrying (exponential backoff: 500ms, 1s)
@@ -768,6 +962,40 @@ final class TasksRepository: ObservableObject {
             throw lastError
         }
         return nil
+    }
+
+    private func resetSignedOutState(status: String) {
+        authService.signOut()
+        taskLists = []
+        tasksByListID = [:]
+        completedTasksByListID = [:]
+        completedLoadStateByListID = [:]
+        visibleTaskRowsByListID = [:]
+        activeNextPageTokenByListID = [:]
+        activeExhaustedListIDs = []
+        activeLoadingListIDs = []
+        completedNextPageTokenByListID = [:]
+        completedExhaustedListIDs = []
+        persistSnapshot()
+        statusMessage = status
+    }
+
+    private func hydratePrimarySnapshot() {
+        hydrate(from: store.loadPrimarySnapshot(), emptyStatus: "まだ保存済みのタスクはありません", loadedStatus: "前回の Google Tasks を読み込みました")
+    }
+
+    private func hydrate(from snapshot: WidgetSnapshot, emptyStatus: String, loadedStatus: String) {
+        taskLists = snapshot.lists
+        tasksByListID = snapshot.tasksByListID.mapValues { $0.filter { !$0.isCompleted } }
+        completedTasksByListID = [:]
+        completedLoadStateByListID = [:]
+        activeNextPageTokenByListID = [:]
+        activeExhaustedListIDs = []
+        activeLoadingListIDs = []
+        completedNextPageTokenByListID = [:]
+        completedExhaustedListIDs = []
+        rebuildVisibleTaskRowCache()
+        statusMessage = snapshot.lists.isEmpty ? emptyStatus : loadedStatus
     }
 }
 

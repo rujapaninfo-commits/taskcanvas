@@ -1,4 +1,5 @@
 import AppKit
+import AuthenticationServices
 import CryptoKit
 import Foundation
 import Network
@@ -8,6 +9,8 @@ final class GoogleOAuthService {
     private let session: URLSession
     private let store: SharedStore
     private var cachedTokens: OAuthTokens?
+    private var webAuthSession: ASWebAuthenticationSession?
+    private let presentationContextProvider = WebAuthenticationPresentationContextProvider()
 
     init(session: URLSession = .shared, store: SharedStore) {
         self.session = session
@@ -62,11 +65,10 @@ final class GoogleOAuthService {
             .init(name: "state", value: state)
         ]
 
-        guard NSWorkspace.shared.open(components.url!) else {
-            throw OAuthError.unableToOpenBrowser
-        }
-
+        try startAuthenticationSession(url: components.url!, redirectServer: redirectServer)
         let callbackURL = try await redirectServer.waitForRedirect()
+        webAuthSession?.cancel()
+        webAuthSession = nil
 
         guard
             let callback = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false),
@@ -102,6 +104,42 @@ final class GoogleOAuthService {
         cachedTokens = tokens
         store.saveTokens(tokens)
         return tokens
+    }
+
+    private func startAuthenticationSession(url: URL, redirectServer: LoopbackRedirectServer) throws {
+        let completion: ASWebAuthenticationSession.CompletionHandler = { [weak self] callbackURL, error in
+            DispatchQueue.main.async {
+                self?.webAuthSession = nil
+                if let callbackURL {
+                    Task { await redirectServer.finish(with: .success(callbackURL)) }
+                    return
+                }
+                if let error = error as? ASWebAuthenticationSessionError,
+                   error.code == .canceledLogin {
+                    Task { await redirectServer.finish(with: .failure(OAuthError.cancelled)) }
+                    return
+                }
+                if let error {
+                    Task { await redirectServer.finish(with: .failure(error)) }
+                    return
+                }
+                Task { await redirectServer.finish(with: .failure(OAuthError.invalidCallback)) }
+            }
+        }
+
+        let authSession = ASWebAuthenticationSession(
+            url: url,
+            callbackURLScheme: nil,
+            completionHandler: completion
+        )
+        authSession.presentationContextProvider = presentationContextProvider
+        authSession.prefersEphemeralWebBrowserSession = false
+        webAuthSession = authSession
+
+        guard authSession.start() else {
+            webAuthSession = nil
+            throw OAuthError.unableToOpenBrowser
+        }
     }
 
     func signOut() {
@@ -164,7 +202,8 @@ final class GoogleOAuthService {
         guard (200..<300).contains(httpResponse.statusCode) else {
             let googleError = try? JSONDecoder().decode(GoogleOAuthErrorResponse.self, from: data)
             throw OAuthError.serverError(
-                googleError?.errorDescription ?? HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode),
+                code: googleError?.error,
+                message: googleError?.errorDescription ?? HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode),
                 context: context,
                 clientID: configuredClientID
             )
@@ -223,6 +262,18 @@ private actor LoopbackRedirectServer {
         }
     }
 
+    func finish(with result: Result<URL, Error>) {
+        guard let activeContinuation = continuation else { return }
+        continuation = nil
+        switch result {
+        case .success(let callbackURL):
+            activeContinuation.resume(returning: callbackURL)
+        case .failure(let error):
+            activeContinuation.resume(throwing: error)
+        }
+        listener.cancel()
+    }
+
     private func handle(connection: NWConnection) async {
         connection.start(queue: .main)
         do {
@@ -234,9 +285,7 @@ private actor LoopbackRedirectServer {
                 let path = firstLine.split(separator: " ").dropFirst().first
             else {
                 try await respond(on: connection, status: "400 Bad Request", body: "Invalid callback")
-                continuation?.resume(throwing: OAuthError.invalidCallback)
-                continuation = nil
-                listener.cancel()
+                finish(with: .failure(OAuthError.invalidCallback))
                 return
             }
 
@@ -246,13 +295,9 @@ private actor LoopbackRedirectServer {
                 status: "200 OK",
                 body: "Authentication complete. You can close this window."
             )
-            continuation?.resume(returning: callbackURL)
-            continuation = nil
-            listener.cancel()
+            finish(with: .success(callbackURL))
         } catch {
-            continuation?.resume(throwing: error)
-            continuation = nil
-            listener.cancel()
+            finish(with: .failure(error))
         }
         connection.cancel()
     }
@@ -290,6 +335,15 @@ private actor LoopbackRedirectServer {
     }
 }
 
+private final class WebAuthenticationPresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        NSApplication.shared.keyWindow
+            ?? NSApplication.shared.mainWindow
+            ?? NSApplication.shared.windows.first { $0.isVisible }
+            ?? ASPresentationAnchor()
+    }
+}
+
 private struct TokenResponse: Decodable {
     let accessToken: String
     let refreshToken: String?
@@ -317,7 +371,15 @@ enum OAuthError: Error, LocalizedError {
     case invalidCallback
     case invalidRedirectServer
     case unableToOpenBrowser
-    case serverError(String, context: String, clientID: String)
+    case cancelled
+    case serverError(code: String?, message: String, context: String, clientID: String)
+
+    var requiresReauthentication: Bool {
+        guard case .serverError(let code, _, let context, _) = self else {
+            return false
+        }
+        return context == "refresh_token" && code == "invalid_grant"
+    }
 
     var errorDescription: String? {
         switch self {
@@ -329,7 +391,12 @@ enum OAuthError: Error, LocalizedError {
             return "ローカル認証サーバーを起動できませんでした。アプリを再起動してもう一度お試しください。"
         case .unableToOpenBrowser:
             return "Google ログイン用のブラウザを開けませんでした。"
-        case .serverError(let message, let context, _):
+        case .cancelled:
+            return "Google ログインがキャンセルされました。"
+        case .serverError(_, let message, let context, _):
+            if requiresReauthentication {
+                return "Google ログインの有効期限が切れました。もう一度ログインしてください。"
+            }
             if message.contains("client_secret is missing") {
                 return "Google ログインで client_secret missing が返りました (flow=\(context))。Desktop クライアントが正しく設定されているか確認してください。"
             }

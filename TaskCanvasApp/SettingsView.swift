@@ -45,11 +45,11 @@ struct SettingsView: View {
             }
 
             Section("レビュー用デモ") {
-                Text("ログインできない環境でも、リスト表示・追加・編集・完了チェック・サブタスク・並び替えを確認できます。外部サーバーへは接続しません。")
+                Text("開始すると未ログイン風の画面になり、Google にログインしても戻り先はデモ画面のままです。デモを終了すると実際の Google Tasks に戻ります。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack {
-                    Button(repository.isDemoMode ? "デモをリセット" : "デモモードを開始") {
+                    Button(repository.isDemoMode ? "デモを最初からやり直す" : "デモモードを開始") {
                         repository.startDemoMode()
                         openWindow(id: "main-window")
                         NSApplication.shared.activate(ignoringOtherApps: true)
